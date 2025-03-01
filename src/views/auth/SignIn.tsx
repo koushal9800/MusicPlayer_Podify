@@ -19,6 +19,8 @@ import CircleUi from '../../ui/CircleUi';
 import AuthFormContainer from '../../components/AuthFormContainer';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { AuthStackParamList } from '../../@types/navigation';
+import { FormikHelpers } from 'formik';
+import client from '../../api/client';
 
 const signupSchema = yup.object({
  
@@ -36,6 +38,12 @@ const signupSchema = yup.object({
     .required('Password is required!'),
 });
 
+interface siginUserInfo{
+  
+  email: '',
+  password: '',
+}
+
 interface Props {}
 
 const initialValues = {
@@ -47,14 +55,33 @@ const initialValues = {
 const SignIn: FC<Props> = props => {
   const [secureEntry, setSecureEntry] = useState(true);
 const navigation = useNavigation<NavigationProp<AuthStackParamList>>()
+
+
+const handleSubmit = async (
+  values: siginUserInfo,
+  actions: FormikHelpers<siginUserInfo>,
+) => {
+  actions.setSubmitting(true)
+  try {
+    
+    // we want to send these information to our api
+    const {data} = await client.post('/auth/sign-in', {
+      ...values,
+    });
+
+    console.log(data);
+    // navigation.navigate('Verification',{ userInfo: data.user })
+  } catch (error) {
+    console.log('Sign in error: ', error);
+  }
+  actions.setSubmitting(false)
+};
   return (
     
       
 
       <Form
-        onSubmit={values => {
-          console.log(values);
-        }}
+        onSubmit={handleSubmit}
         initialValues={initialValues}
         validationSchema={signupSchema}>
           <AuthFormContainer  heading='Welcome Back!' >

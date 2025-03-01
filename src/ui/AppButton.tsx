@@ -1,13 +1,15 @@
 import React from "react";
 import { View,StyleSheet, Pressable,Text } from "react-native";
 import colors from "../utils/colors";
+import Loader from "./Loader";
 
 interface Props {
     title:string,
-    onPress?:()=>void
+    onPress?:()=>void,
+    busy?:boolean
 }
 
-const AppButton :React.FC<Props> = ({title,onPress}) =>{
+const AppButton :React.FC<Props> = ({title,onPress,busy}) =>{
     return(
         <Pressable 
         onPress={onPress}
@@ -19,7 +21,8 @@ const AppButton :React.FC<Props> = ({title,onPress}) =>{
             borderRadius:25,
             justifyContent:'center'
         }} >
-<Text style={{ color:colors.CONTRAST, fontSize:18 }} >{title}</Text>
+            
+{busy? <Loader /> : <Text style={{ color:colors.CONTRAST, fontSize:18 }} >{title}</Text>}
         </Pressable>
     )
 }
