@@ -21,6 +21,9 @@ import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { AuthStackParamList } from '../../@types/navigation';
 import { FormikHelpers } from 'formik';
 import client from '../../api/client';
+import { updateLoggedInState, updateProfile } from '../../store/auth';
+import { useDispatch } from 'react-redux';
+import { Keys, saveToAsyncStorage } from '../../utils/asyncStorage';
 
 const signupSchema = yup.object({
  
@@ -55,7 +58,7 @@ const initialValues = {
 const SignIn: FC<Props> = props => {
   const [secureEntry, setSecureEntry] = useState(true);
 const navigation = useNavigation<NavigationProp<AuthStackParamList>>()
-
+const dispatch = useDispatch()
 
 const handleSubmit = async (
   values: siginUserInfo,
@@ -69,7 +72,11 @@ const handleSubmit = async (
       ...values,
     });
 
-    console.log(data);
+
+    await saveToAsyncStorage(Keys.AUTH_TOKEN,data.token)
+dispatch(updateProfile(data.profile))
+dispatch(updateLoggedInState(true))
+    // console.log(data);
     // navigation.navigate('Verification',{ userInfo: data.user })
   } catch (error) {
     console.log('Sign in error: ', error);
