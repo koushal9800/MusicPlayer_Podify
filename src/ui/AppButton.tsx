@@ -6,10 +6,11 @@ import Loader from "./Loader";
 interface Props {
     title:string,
     onPress?:()=>void,
-    busy?:boolean
+    busy?:boolean,
+    borderRadius?:number
 }
 
-const AppButton :React.FC<Props> = ({title,onPress,busy}) =>{
+const AppButton :React.FC<Props> = ({title,onPress,busy,borderRadius}) =>{
     return(
         <Pressable 
         onPress={onPress}
@@ -18,7 +19,7 @@ const AppButton :React.FC<Props> = ({title,onPress,busy}) =>{
             height:45,
             backgroundColor:colors.SECONDARY,
             alignItems:'center',
-            borderRadius:25,
+            borderRadius:borderRadius || 25,
             justifyContent:'center'
         }} >
             
