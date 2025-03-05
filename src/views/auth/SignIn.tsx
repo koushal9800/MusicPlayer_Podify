@@ -24,6 +24,8 @@ import client from '../../api/client';
 import { updateLoggedInState, updateProfile } from '../../store/auth';
 import { useDispatch } from 'react-redux';
 import { Keys, saveToAsyncStorage } from '../../utils/asyncStorage';
+import catchAsyncError from '../../api/catchError';
+import { updateNotification } from '../../store/notification';
 
 const signupSchema = yup.object({
  
@@ -79,7 +81,8 @@ dispatch(updateLoggedInState(true))
     // console.log(data);
     // navigation.navigate('Verification',{ userInfo: data.user })
   } catch (error) {
-    console.log('Sign in error: ', error);
+    const errorMessage = catchAsyncError(error)
+    dispatch(updateNotification({message:errorMessage,type:'error'}))
   }
   actions.setSubmitting(false)
 };

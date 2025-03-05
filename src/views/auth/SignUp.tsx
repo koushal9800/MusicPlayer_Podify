@@ -19,10 +19,13 @@ import AuthFormContainer from '../../components/AuthFormContainer';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 // import {AuthStackParamList} from '../../navigation/';
 import {FormikHelpers} from 'formik';
-import axios from 'axios';
+import axios, { isAxiosError } from 'axios';
 import { AuthStackParamList } from '../../@types/navigation';
 import client from '../../api/client';
 import { userInfo } from 'os';
+import { useDispatch } from 'react-redux';
+import catchAsyncError from '../../api/catchError';
+import { updateNotification } from '../../store/notification';
 
 const signupSchema = yup.object({
   name: yup
@@ -63,7 +66,7 @@ const initialValues = {
 const SignUp: FC<Props> = props => {
   const [secureEntry, setSecureEntry] = useState(true);
   const navigation = useNavigation<NavigationProp<AuthStackParamList>>();
-
+const dispatch = useDispatch()
   const togglePasswordView = () => {
     setSecureEntry(!secureEntry);
   };
@@ -82,7 +85,11 @@ const SignUp: FC<Props> = props => {
       console.log(data);
       navigation.navigate('Verification',{ userInfo: data.user })
     } catch (error) {
-      console.log('Sign up error: ', error);
+      // if(isAxiosError(error))
+        // error.response?.data.error
+      // console.log('Sign up error: ', error);
+      const errorMessage = catchAsyncError(error)
+      dispatch(updateNotification({message:errorMessage,type:'error'}))
     }
     actions.setSubmitting(false)
   };

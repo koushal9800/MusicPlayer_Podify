@@ -19,6 +19,9 @@ import client from '../api/client';
 import { getFromAsyncStorage, Keys } from '../utils/asyncStorage';
 import Progress from '../ui/Progress';
 import { mapRange } from '../utils/math';
+import catchAsyncError from '../api/catchError';
+import { updateNotification } from '../store/notification';
+import { useDispatch } from 'react-redux';
 
 interface Props {}
 
@@ -63,6 +66,8 @@ const [audioInfo,setAudioInfo] = useState({...defaultForm})
 
 const [uploadProgress,setUploadProgress] = useState(0)
 const [busy,setBusy] = useState(false)
+
+const dispatch = useDispatch()
 
 const handleUpload = async()=>{
     setBusy(true)
@@ -109,8 +114,9 @@ if(uploaded >= 100){
     }
 })
 console.log(data)
-    }catch(err){
-        console.log(err)
+    }catch(error){
+      const errorMessage = catchAsyncError(error)
+      dispatch(updateNotification({message:errorMessage,type:'error'}))
     }
     setBusy(false)
 }

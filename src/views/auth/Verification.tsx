@@ -9,6 +9,9 @@ import { AuthStackParamList } from '../../@types/navigation';
 import client from '../../api/client';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import colors from '../../utils/colors';
+import catchAsyncError from '../../api/catchError';
+import { updateNotification } from '../../store/notification';
+import { useDispatch } from 'react-redux';
 
 type Props = NativeStackScreenProps<AuthStackParamList, "Verification">
 
@@ -21,6 +24,7 @@ const Verification: FC<Props> = ({route}) => {
   const [countDown,setCountDown] = useState(30)
   const [canSendNewOtpRequest,setCanSendNewOtpRequest] = useState(false)
   const navigation = useNavigation<NavigationProp<AuthStackParamList>>();
+  const dispatch = useDispatch()
 
    const {userInfo} = route.params
 
@@ -61,7 +65,8 @@ const isValidOtp = otp.every(value =>{
      const {data} = await client.post('/auth/verify-email',{userId:userInfo.id, token: otp.join('')})
      navigation.navigate('SignIn')
     } catch(error){
-      console.log(error)
+      const errorMessage = catchAsyncError(error)
+      dispatch(updateNotification({message:errorMessage,type:'error'}))
     }
     setSubmitting(false)
   }
